@@ -29,7 +29,7 @@ def login():
                 # Guardamos los datos en la sesión
                 st.session_state['logged_in'] = True
                 st.session_state['username'] = user_data['username']
-                st.session_state['rol'] = user_data['rol']
+                st.session_state['role'] = user_data['role']
                 st.rerun() # Recarga la app para aplicar los cambios de estado
             else:
                 st.error("❌ Usuario o contraseña incorrectos.")
