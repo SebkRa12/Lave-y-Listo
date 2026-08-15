@@ -1,22 +1,18 @@
+import sqlite3
 from werkzeug.security import check_password_hash
-from database import get_connection
 
 def authenticate_user(username, password):
-    """
-    Verifica las credenciales del usuario contra la base de datos.
-    Retorna un diccionario con los datos del usuario si es exitoso, o None si falla.
-    """
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, username, password_hashed, rol FROM usuarios WHERE username = ?", (username,))
-        user = cursor.fetchone()
-
-        # Validamos que el usuario exista y que la contraseña coincida
-        if user and check_password_hash(user['password_hashed'], password):
-            return {
-                "id": user['id'],
-                "username": user['username'],
-                "rol": user['rol']
-            }
+    conn = sqlite3.connect('lave_y_listo.db')
+    cursor = conn.cursor()
+    # Usamos 'password' y 'role' que son los nombres correctos de las columnas
+    cursor.execute('SELECT id, username, password, role FROM usuarios WHERE username = ?', (username,))
+    result = cursor.fetchone()
+    conn.close()
+    
+    if result:
+        user_id, db_username, stored_password, role = result
+        if check_password_hash(stored_password, password):
+            # Devolvemos un diccionario con los datos que app.py necesita
+            return {"id": user_id, "username": db_username, "role": role}
             
     return None
